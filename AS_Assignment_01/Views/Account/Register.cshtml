@@ -1,0 +1,182 @@
+@model AS_Assignment_01.Models.RegisterViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Ace Job Membership";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-xl-10 col-xxl-8">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <div class="row g-0">
+                <div class="col-lg-4 bg-primary p-5 text-white d-flex flex-column justify-content-center">
+                    <img src="~/images/AceJobAgency_Logo.png" class="mb-4 brightness-0 invert" style="height: 50px;" />
+                    <h2 class="fw-black mb-3">Join the Agency</h2>
+                    <p class="opacity-75">Create a secure professional profile to start your career journey with Ace Job.</p>
+                    <ul class="list-unstyled mt-4 small">
+                        <li class="mb-2"><i class="bi bi-shield-check me-2"></i> Encrypted Data Storage</li>
+                        <li class="mb-2"><i class="bi bi-key me-2"></i> Multi-Factor Security</li>
+                        <li><i class="bi bi-file-earmark-lock me-2"></i> Secure Resume Hosting</li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-8 p-5 bg-white">
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small border-0 shadow-sm mb-4 @(ViewData.ModelState.IsValid ? "d-none" : "")"></div>
+
+                    <form asp-action="Register" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <h5 class="text-primary fw-bold mb-4 uppercase ls-1">Personal Details</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">FIRST NAME</label>
+                                <input asp-for="FirstName" class="form-control bg-light border-0 py-2" placeholder="John" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">LAST NAME</label>
+                                <input asp-for="LastName" class="form-control bg-light border-0 py-2" placeholder="Doe" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">GENDER</label>
+                                <select asp-for="Gender" class="form-select bg-light border-0 py-2">
+                                    <option value="">Select Gender</option>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-primary"><i class="bi bi-lock-fill me-1"></i>NRIC (ENCRYPTED)</label>
+                                <input asp-for="NRIC" class="form-control border-primary-subtle py-2" placeholder="S1234567X" />
+                            </div>
+                        </div>
+
+                        <h5 class="text-primary fw-bold mb-4 uppercase ls-1">Security Verification</h5>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted">EMAIL ADDRESS</label>
+                            <div class="input-group">
+                                <input asp-for="Email" id="emailInput" class="form-control bg-light border-0 py-2" placeholder="name@example.com" />
+                                <button type="button" class="btn btn-primary px-4 fw-bold" onclick="sendOTP()">SEND OTP</button>
+                            </div>
+                            <div id="otpStatus" class="mt-1"></div>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25">
+                            <label class="form-label small fw-bold text-primary">6-DIGIT VERIFICATION CODE</label>
+                            <input name="userOTP" id="otpInput" class="form-control form-control-lg text-center fw-bold ls-lg border-0" maxlength="6" placeholder="000000" />
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">PASSWORD</label>
+                                <div class="input-group">
+                                    <input asp-for="Password" type="password" id="passInput" onkeyup="checkStrength()" class="form-control bg-light border-0" />
+                                    <button class="btn btn-light border-0" type="button" onclick="togglePass('passInput', 'eye1')">
+                                        <i class="bi bi-eye-slash" id="eye1"></i>
+                                    </button>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;"><div id="bar" class="progress-bar"></div></div>
+                                <small id="status" class="fw-bold d-block mt-1 extra-small"></small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">CONFIRM PASSWORD</label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control bg-light border-0 py-2" />
+                            </div>
+                        </div>
+
+                        <h5 class="text-primary fw-bold mb-4 uppercase ls-1">Professional Data</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">DATE OF BIRTH</label>
+                                <input asp-for="DateOfBirth" type="date" class="form-control bg-light border-0" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">PROFILE PHOTO (.JPG ONLY)</label>
+                                <input type="file" name="photoFile" class="form-control bg-light border-0" accept=".jpg,.jpeg" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">RESUME (.PDF/.DOCX)</label>
+                                <input type="file" name="resumeFile" class="form-control bg-light border-0" accept=".pdf,.docx" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">WHO AM I</label>
+                                <textarea asp-for="WhoAmI" class="form-control bg-light border-0" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-3 rounded-pill shadow-sm hover-lift">COMPLETE ENROLLMENT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // --- OTP Logic ---
+        async function sendOTP() {
+            const emailInput = document.getElementById('emailInput');
+            const statusDiv = document.getElementById('otpStatus');
+            const email = emailInput.value;
+
+            if (!email) {
+                statusDiv.innerHTML = '<span class="text-danger small">Please enter an email first.</span>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<span class="text-primary small">Sending OTP...</span>';
+
+            try {
+                const response = await fetch('/Account/SendRegistrationOTP', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    statusDiv.innerHTML = '<span class="text-success small">OTP sent! Check your email.</span>';
+                } else {
+                    statusDiv.innerHTML = '<span class="text-danger small">' + (data.message || 'Failed to send OTP.') + '</span>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="text-danger small">Error connecting to server.</span>';
+            }
+        }
+
+        // --- Password Strength Logic ---
+        // Matches HTML IDs: id="passInput" and id="bar"
+        function checkStrength() {
+            var p = document.getElementById('passInput').value;
+            var b = document.getElementById('bar');
+            var s = document.getElementById('status');
+
+            if (!b) return;
+
+            if (p.length >= 12) {
+                b.style.width = "100%";
+                b.className = "progress-bar bg-success";
+                if(s) s.innerText = "Strong Password";
+            } else if (p.length >= 8) {
+                b.style.width = "60%";
+                b.className = "progress-bar bg-warning";
+                if(s) s.innerText = "Medium Password";
+            } else {
+                b.style.width = "30%";
+                b.className = "progress-bar bg-danger";
+                if(s) s.innerText = "Weak Password";
+            }
+        }
+
+        // --- Password Toggle Logic ---
+        function togglePass(id, eyeId) {
+            const input = document.getElementById(id);
+            const eye = document.getElementById(eyeId);
+            if (input.type === "password") {
+                input.type = "text";
+                eye.classList.replace("bi-eye-slash", "bi-eye");
+            } else {
+                input.type = "password";
+                eye.classList.replace("bi-eye", "bi-eye-slash");
+            }
+        }
+    </script>
+}

@@ -1,0 +1,276 @@
+@model AS_Assignment_01.Models.LoginViewModel
+@inject IConfiguration Configuration
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Ace Job - Login";
+}
+
+<div class="container-fluid p-0 overflow-hidden">
+    <div class="row g-0" style="min-height: 90vh;">
+        <div class="col-lg-5 d-flex align-items-center bg-white px-5 py-5 shadow-lg z-2">
+            <div class="w-100 mx-auto" style="max-width: 400px;">
+                <div class="mb-5">
+                    <img src="~/images/AceJobAgency_Logo.png" alt="Ace Job Agency" class="mb-4" style="height: 200px;" />
+                    <h2 class="fw-bold text-dark mb-1">Welcome Back</h2>
+                    <p class="text-muted">Sign in to access your professional dashboard</p>
+                </div>
+
+                <form asp-action="Login" method="post" id="loginForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="RecaptchaToken" id="recaptchaToken" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small border-0 shadow-sm mb-4"></div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase ls-1">Email Address</label>
+                        <div class="input-group custom-input-group shadow-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-primary"></i></span>
+                            <input asp-for="Email" class="form-control border-start-0" placeholder="name@agency.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger extra-small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase ls-1">Password</label>
+                        <div class="input-group custom-input-group shadow-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-primary"></i></span>
+                            <input asp-for="Password" type="password" id="loginPass" class="form-control border-start-0 border-end-0" placeholder="••••••••" />
+                            <button class="btn btn-white border border-start-0 text-muted" type="button" onclick="toggleLoginPass()">
+                                <i class="bi bi-eye-slash" id="loginEye"></i>
+                            </button>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span asp-validation-for="Password" class="text-danger extra-small"></span>
+                            <a asp-action="ForgotPassword" asp-controller="Account" class="extra-small text-primary fw-bold text-decoration-none">
+                                Forgot password?
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- ===== REVISED: reCAPTCHA v2 Checkbox ===== -->
+                    <div class="mb-4">
+                        <div class="g-recaptcha" data-sitekey="@Configuration["Recaptcha:SiteKey"]"
+                             data-callback="onRecaptchaSuccess"
+                             data-expired-callback="onRecaptchaExpired"
+                             data-error-callback="onRecaptchaError"></div>
+                        <span asp-validation-for="RecaptchaToken" class="text-danger extra-small"></span>
+                        <div id="recaptcha-error" class="text-danger extra-small mt-1" style="display: none;">
+                            Please complete the reCAPTCHA verification
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center p-3 mb-4 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 shadow-sm">
+                        <i class="bi bi-shield-check text-primary me-2 fs-5"></i>
+                        <span class="text-dark fw-medium" style="font-size: 0.75rem;">
+                            Security Tip: Account locks after 3 failed attempts.
+                        </span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-3 shadow rounded-pill hover-lift" id="submitBtn" disabled>
+                        SIGN IN TO ACCOUNT
+                    </button>
+
+                    <div class="text-center mt-5">
+                        <p class="small text-muted">
+                            New to the Agency?
+                            <a href="/Account/Register" class="text-primary fw-bold text-decoration-none ms-1">Create an account</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-7 d-none d-lg-flex bg-light align-items-center justify-content-center position-relative">
+            <div class="isometric-decoration">
+                <div class="bg-text opacity-10">ACE</div>
+
+                <div class="login-visual-container">
+                    <div class="visual-card shadow-lg p-5 rounded-5 bg-white border-top border-primary border-5">
+                        <i class="bi bi-briefcase text-primary" style="font-size: 6rem;"></i>
+                        <h3 class="fw-black text-dark mt-3">JOB PORTAL</h3>
+                        <p class="text-muted">Secure Career Management</p>
+                    </div>
+                </div>
+
+                <div class="bubble b-blue b-1"></div>
+                <div class="bubble b-blue b-2"></div>
+                <div class="bubble b-blue b-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+
+    <!-- ===== REVISED: reCAPTCHA v2 Script ===== -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <script>
+        // Password toggle function
+        function toggleLoginPass() {
+            const passwordField = document.getElementById('loginPass');
+            const eyeIcon = document.getElementById('loginEye');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.className = 'bi bi-eye';
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.className = 'bi bi-eye-slash';
+            }
+        }
+
+        // reCAPTCHA v2 Callbacks
+        function onRecaptchaSuccess(token) {
+            console.log('reCAPTCHA successful, token:', token.substring(0, 20) + '...');
+            document.getElementById('recaptchaToken').value = token;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('recaptcha-error').style.display = 'none';
+        }
+
+        function onRecaptchaExpired() {
+            console.log('reCAPTCHA expired');
+            document.getElementById('recaptchaToken').value = '';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('recaptcha-error').textContent = 'reCAPTCHA expired. Please verify again.';
+            document.getElementById('recaptcha-error').style.display = 'block';
+            grecaptcha.reset();
+        }
+
+        function onRecaptchaError() {
+            console.log('reCAPTCHA error');
+            document.getElementById('recaptchaToken').value = '';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('recaptcha-error').textContent = 'reCAPTCHA error. Please try again.';
+            document.getElementById('recaptcha-error').style.display = 'block';
+        }
+
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    const token = document.getElementById('recaptchaToken').value;
+
+                    if (!token || token.trim() === '') {
+                        e.preventDefault();
+                        document.getElementById('recaptcha-error').textContent = 'Please complete the reCAPTCHA verification';
+                        document.getElementById('recaptcha-error').style.display = 'block';
+
+                        // Scroll to reCAPTCHA
+                        document.querySelector('.g-recaptcha').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+
+                        return false;
+                    }
+
+                    // If token exists, form will submit normally
+                    console.log('Form submitting with token');
+                });
+            }
+
+            // Check if reCAPTCHA is loaded
+            setTimeout(function () {
+                if (typeof grecaptcha === 'undefined') {
+                    console.error('reCAPTCHA not loaded');
+                    document.getElementById('recaptcha-error').textContent = 'Security features failed to load. Please refresh the page.';
+                    document.getElementById('recaptcha-error').style.display = 'block';
+                } else {
+                    console.log('reCAPTCHA loaded successfully');
+                }
+            }, 2000);
+        });
+    </script>
+}
+
+<style>
+    /* Add this to ensure reCAPTCHA widget is visible */
+    .g-recaptcha {
+        margin: 15px 0;
+        min-height: 78px; /* Height of reCAPTCHA widget */
+    }
+
+    .ls-1 {
+        letter-spacing: 0.5px;
+    }
+
+    .extra-small {
+        font-size: 0.7rem;
+    }
+
+    .fw-black {
+        font-weight: 900;
+    }
+
+    .custom-input-group .form-control:focus {
+        z-index: 3;
+        box-shadow: none;
+    }
+
+    .hover-lift {
+        transition: all 0.2s ease;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2) !important;
+        }
+
+    .bg-text {
+        font-size: 25rem;
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) skewY(-5deg);
+        z-index: 0;
+        color: var(--ace-primary);
+    }
+
+    .login-visual-container {
+        position: relative;
+        z-index: 2;
+        animation: floatLogin 6s ease-in-out infinite;
+    }
+
+    .visual-card {
+        text-align: center;
+        width: 300px;
+    }
+
+    .bubble.b-blue {
+        position: absolute;
+        background: rgba(37, 99, 235, 0.1);
+        border-radius: 50%;
+    }
+
+    .b-1 {
+        width: 60px;
+        height: 60px;
+        top: 20%;
+        right: 10%;
+    }
+
+    .b-2 {
+        width: 100px;
+        height: 100px;
+        bottom: 10%;
+        left: 5%;
+    }
+
+    @@keyframes floatLogin {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-25px);
+        }
+    }
+</style>

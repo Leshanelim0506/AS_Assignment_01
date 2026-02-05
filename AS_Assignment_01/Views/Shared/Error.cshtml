@@ -1,0 +1,195 @@
+@model int
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Error - Ace Job Agency";
+
+    var errorCode = Model;
+    var title = "Something went wrong.";
+    var subtitle = "Our team has been notified and we are working to fix the issue.";
+    var accentColor = "primary";
+
+    if (errorCode == 404)
+    {
+        title = "Page Lost in Space";
+        subtitle = "The career resource or page you are looking for at Ace Job Agency has moved or doesn't exist.";
+    }
+    else if (errorCode == 403)
+    {
+        title = "Restricted Access";
+        subtitle = "You do not have the necessary security clearances to view this department's data.";
+        accentColor = "danger";
+    }
+}
+
+<div class="error-wrapper">
+    <div class="container">
+        <div class="row align-items-center justify-content-center" style="min-height: 85vh;">
+
+            <div class="col-lg-5 text-start ps-lg-5 z-2">
+                <div class="error-badge bg-@accentColor bg-opacity-10 text-@accentColor mb-3">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> ERROR @errorCode
+                </div>
+                <h1 class="display-1 fw-black text-dark mb-0">Oops!</h1>
+                <h2 class="fw-bold text-secondary-emphasis mt-2 mb-4">@title</h2>
+                <p class="text-muted fs-5 mb-5 opacity-75" style="max-width: 420px;">@subtitle</p>
+
+                <div class="d-flex gap-3">
+                    <a href="/Account/Index" class="btn btn-@accentColor px-5 py-3 fw-bold rounded-pill shadow-lg hover-lift">
+                        <i class="bi bi-house-door-fill me-2"></i>Go Home
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-dark px-4 py-3 fw-bold rounded-pill border-2">
+                        Go Back
+                    </button>
+                </div>
+
+                <div class="mt-5 pt-4 border-top border-secondary border-opacity-10">
+                    <div class="d-flex align-items-center text-muted">
+                        <div class="bg-light p-2 rounded-circle me-3">
+                            <i class="bi bi-shield-lock-fill text-@accentColor"></i>
+                        </div>
+                        <span class="small">Ref ID: <code class="text-@accentColor fw-bold">@Guid.NewGuid().ToString().Substring(0, 8).ToUpper()</code></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 text-center position-relative d-none d-lg-block">
+                <div class="isometric-canvas">
+                    <div class="ghost-number text-@accentColor">@errorCode</div>
+
+                    <div class="icon-stage">
+                        <div class="glass-shield">
+                            <div class="icon-blob bg-@accentColor"></div>
+                            <i class="bi bi-layers-fill display-1 text-white"></i>
+                        </div>
+                    </div>
+
+                    <div class="floating-orbit">
+                        <div class="orbit-dot d-1 bg-@accentColor"></div>
+                        <div class="orbit-dot d-2 bg-info"></div>
+                        <div class="orbit-dot d-3 bg-@accentColor"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --ace-blue: #2563eb;
+    }
+
+    .fw-black {
+        font-weight: 900;
+    }
+
+    .error-wrapper {
+        background: radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.05) 0%, rgba(255, 255, 255, 1) 50%);
+        overflow: hidden;
+    }
+
+    .error-badge {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    /* Isometric Canvas Styling */
+    .isometric-canvas {
+        perspective: 1000px;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ghost-number {
+        font-size: 22rem;
+        font-weight: 900;
+        opacity: 0.05;
+        position: absolute;
+        transform: rotateX(20deg) rotateZ(-10deg);
+        user-select: none;
+    }
+
+    .icon-stage {
+        position: relative;
+        z-index: 3;
+        animation: floatIcon 5s ease-in-out infinite;
+    }
+
+    .glass-shield {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 3rem;
+        border-radius: 30px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .icon-blob {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        filter: blur(40px);
+        opacity: 0.4;
+        top: -50px;
+        left: -50px;
+        border-radius: 50%;
+    }
+
+    /* Orbiting Dots */
+    .orbit-dot {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(2px);
+    }
+
+    .d-1 {
+        width: 30px;
+        height: 30px;
+        top: 20%;
+        right: 15%;
+        animation: floatIcon 4s ease-in-out infinite alternate;
+    }
+
+    .d-2 {
+        width: 15px;
+        height: 15px;
+        bottom: 30%;
+        left: 10%;
+        animation: floatIcon 3s ease-in-out infinite alternate-reverse;
+    }
+
+    .d-3 {
+        width: 50px;
+        height: 50px;
+        bottom: 10%;
+        right: 5%;
+        opacity: 0.1;
+    }
+
+    .hover-lift {
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+    @@keyframes floatIcon {
+        0%, 100% {
+            transform: translateY(0) rotate(0);
+        }
+
+        50% {
+            transform: translateY(-30px) rotate(2deg);
+        }
+    }
+</style>

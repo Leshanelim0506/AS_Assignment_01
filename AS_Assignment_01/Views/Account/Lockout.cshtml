@@ -1,0 +1,29 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Access Suspended";
+}
+
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-6 col-lg-5 text-center">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="bg-danger" style="height: 8px;"></div>
+            <div class="card-body p-5">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 mb-4" style="width: 100px; height: 100px;">
+                        <i class="bi bi-exclamation-octagon text-danger" style="font-size: 3.5rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-3">Login Threshold Exceeded</h2>
+                    <p class="text-muted px-4">For your security, your account has been temporarily locked due to multiple failed authentication attempts. </p>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 mb-4">
+                    <p class="mb-0 small fw-bold text-danger">Please wait 15 minutes before your next attempt.</p>
+                </div>
+
+                <a href="/Account/Login" class="btn btn-dark w-100 fw-bold py-3 rounded-pill shadow-sm">
+                    RETURN TO LOGIN PORTAL
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
