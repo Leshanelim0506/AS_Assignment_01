@@ -77,6 +77,7 @@ namespace AS_Assignment_01.Controllers
         public IActionResult Register() => View();
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendRegistrationOTP([FromBody] OtpRequest request)
         {
             if (string.IsNullOrEmpty(request?.Email))
